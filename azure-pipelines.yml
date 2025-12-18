@@ -1,0 +1,49 @@
+trigger:
+ branches:
+     include:
+       - development
+
+pool: Default
+
+jobs:
+ - job: SAST
+   displayName: Static Analysis(SonarQuebe)
+   steps:
+    - task: PowerShell@2
+      displayName: 'SonarQube Analysis'
+      inputs:
+        targetType: 'inline'
+        script: |
+          sonar-scanner `
+            -D"sonar.host.url=http://localhost:9000" `
+            -D"sonar.token=sqp_3b22952c6ed3a49aab1914d3343aa63dcaa85644" `
+            -D"sonar.projectKey=To-do-Pipeline" `
+            -D"sonar.sources=src"
+
+ - job: Build
+   dependsOn: SAST
+   displayName: Build
+   steps:
+   - task: NodeTool@0
+     displayName: Node Toll Installer
+     inputs:
+       versionSource: 'spec'
+       versionSpec: '16.x'
+
+   - task: PowerShell@2
+     displayName: Npm Install
+     inputs:
+       targetType: 'inline'
+       script: 'npm install'
+
+   - task: PowerShell@2
+     displayName: Npm build
+     inputs:
+       targetType: 'inline'
+       script: 'npm run build'
+
+   - task: PublishPipelineArtifact@1
+     inputs:
+       targetPath: $(System.DefaultWorkingDirectory)/build/'
+       artifact: 'todo-Artifcats'
+       publishLocation: 'pipeline'
