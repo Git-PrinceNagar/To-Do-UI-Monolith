@@ -49,14 +49,20 @@ steps:
 # - script: npm ci
 #   displayName: 'Install dependencies'
 
-- task: Npm@1
-  inputs:
-    command: 'ci'
+# - task: Npm@1
+#   inputs:
+#     command: 'ci'
 
 # # Run tests with coverage
 # - script: npm test -- --coverage --watchAll=false
 #   displayName: 'Run tests with coverage'
 
+- task: Npm@1
+  displayName: 'npm ci'
+  inputs:
+    command: 'custom'
+    customCommand: 'ci'
+    workingDir: '$(System.DefaultWorkingDirectory)/src'
 
 
 # # Run SonarCloud Analysis
