@@ -7,78 +7,42 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
-# variables:
-#   SONAR_ORGANIZATION: 'Git-PrinceNagar'
-#   SONAR_PROJECT_KEY: 'Git-PrinceNagar_To-Do-UI-Monolith'
+variables:
+  SONAR_ORGANIZATION: 'Git-PrinceNagar'
+  SONAR_PROJECT_KEY: 'Git-PrinceNagar_To-Do-UI-Monolith'
 
 steps:
 # Prepare SonarCloud Analysis
-# - task: SonarCloudPrepare@4
-#   inputs:
-#     SonarCloud: 'SonarCloud-Connection'
-#     organization: '$(SONAR_ORGANIZATION)'
-#     scannerMode: 'CLI'
-#     configMode: 'manual'
-#     cliProjectKey: '$(SONAR_PROJECT_KEY)'
-#     cliProjectName: 'To-Do-UI-Monolith'
-#     cliSources: 'src'
-
 - task: SonarCloudPrepare@4
   inputs:
-    SonarQube: 'SonarCloud-Connection'
-    organization: 'git-princenagar'
-    scannerMode: 'cli'
+    SonarCloud: 'SonarCloud-Connection'
+    organization: '$(SONAR_ORGANIZATION)'
+    scannerMode: 'CLI'
     configMode: 'manual'
-    cliProjectKey: 'Git-PrinceNagar_To-Do-UI-Monolith'
+    cliProjectKey: '$(SONAR_PROJECT_KEY)'
     cliProjectName: 'To-Do-UI-Monolith'
     cliSources: 'src'
 
 # Install Node.js
-# - task: NodeTool@0
-#   inputs:
-#     versionSpec: '18.x'
-#   displayName: 'Install Node.js'
-
 - task: NodeTool@0
   inputs:
-    versionSource: 'spec'
-    versionSpec: '6.x'
-    checkLatest: true
+    versionSpec: '18.x'
+  displayName: 'Install Node.js'
 
-# # Install dependencies
-# - script: npm ci
-#   displayName: 'Install dependencies'
+# Install dependencies
+- script: npm ci
+  displayName: 'Install dependencies'
 
-# - task: Npm@1
-#   inputs:
-#     command: 'ci'
+# Run tests with coverage
+- script: npm test -- --coverage --watchAll=false
+  displayName: 'Run tests with coverage'
 
-# # Run tests with coverage
-# - script: npm test -- --coverage --watchAll=false
-#   displayName: 'Run tests with coverage'
-
-- task: Npm@1
-  displayName: 'npm ci'
-  inputs:
-    command: 'custom'
-    customCommand: 'ci'
-    workingDir: '$(System.DefaultWorkingDirectory)/src'
-
-
-# # Run SonarCloud Analysis
-# - task: SonarCloudAnalyze@4
-#   displayName: 'Run SonarCloud Analysis'
-
+# Run SonarCloud Analysis
 - task: SonarCloudAnalyze@4
-  inputs:
-    jdkversion: 'JAVA_HOME_17_X64'
+  displayName: 'Run SonarCloud Analysis'
 
-# # Publish Quality Gate Result
-# - task: SonarCloudPublish@4
-#   inputs:
-#     pollingTimeoutSec: '300'
-#   displayName: 'Publish Quality Gate Result'
-
+# Publish Quality Gate Result
 - task: SonarCloudPublish@4
   inputs:
-      pollingTimeoutSec: '300'
+    pollingTimeoutSec: '300'
+  displayName: 'Publish Quality Gate Result'
