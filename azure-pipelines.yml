@@ -40,6 +40,6 @@ jobs:
    - task: PublishPipelineArtifact@1
      displayName: Publish Artifacts
      inputs:
-       targetPath: $(System.DefaultWorkingDirectory)/build/'
+       targetPath: $(System.DefaultWorkingDirectory)/build'
        artifact: 'todo-Artifacts'
        publishLocation: 'pipeline'
