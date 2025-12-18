@@ -8,7 +8,7 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  SONAR_ORGANIZATION: 'Git-PrinceNagar'
+  SONAR_ORGANIZATION: 'git-princenagar'
   SONAR_PROJECT_KEY: 'Git-PrinceNagar_To-Do-UI-Monolith'
 
 steps:
