@@ -30,20 +30,19 @@ jobs:
        versionSource: 'spec'
        versionSpec: '16.x'
 
-   - task: PowerShell@2
+   - task: CmdLine@2
      displayName: Npm Install
      inputs:
-       targetType: 'inline'
        script: 'npm install'
 
-   - task: PowerShell@2
-     displayName: Npm build
+   - task: CmdLine@2
+     displayName: Npm Build
      inputs:
-       targetType: 'inline'
        script: 'npm run build'
 
    - task: PublishPipelineArtifact@1
+     displayName: Publish Artifacts
      inputs:
        targetPath: $(System.DefaultWorkingDirectory)/build/'
-       artifact: 'todo-Artifcats'
+       artifact: 'todo-Artifacts'
        publishLocation: 'pipeline'
