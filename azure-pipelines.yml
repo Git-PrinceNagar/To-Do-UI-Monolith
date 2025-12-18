@@ -35,10 +35,13 @@ jobs:
    - task: CmdLine@2
      displayName: Npm Build
      inputs:
-       script: 'npm run build'
+       script: |
+         npm run build
+         ls -la
 
    - task: PublishPipelineArtifact@1
      displayName: Publish Artifacts
+     condition: succeededOrFailed()
      inputs:
        targetPath: $(System.DefaultWorkingDirectory)/build'
        artifact: 'todo-Artifacts'
