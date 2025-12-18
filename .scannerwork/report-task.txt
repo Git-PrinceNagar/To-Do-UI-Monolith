@@ -1,0 +1,6 @@
+projectKey=To-do-Pipeline
+serverUrl=http://localhost:9000
+serverVersion=25.12.0.117093
+dashboardUrl=http://localhost:9000/dashboard?id=To-do-Pipeline
+ceTaskId=06bc6e2e-af70-4a2d-9ab9-91bb472f04f6
+ceTaskUrl=http://localhost:9000/api/ce/task?id=06bc6e2e-af70-4a2d-9ab9-91bb472f04f6
