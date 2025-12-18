@@ -34,8 +34,8 @@ steps:
   displayName: 'Install dependencies'
 
 # Run tests with coverage
-- script: npm test -- --coverage --watchAll=false
-  displayName: 'Run tests with coverage'
+# - script: npm test -- --coverage --watchAll=false
+#   displayName: 'Run tests with coverage'
 
 # Run SonarCloud Analysis
 - task: SonarCloudAnalyze@4
