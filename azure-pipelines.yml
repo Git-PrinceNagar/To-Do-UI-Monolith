@@ -46,3 +46,4 @@ steps:
   inputs:
     pollingTimeoutSec: '300'
   displayName: 'Publish Quality Gate Result'
+
