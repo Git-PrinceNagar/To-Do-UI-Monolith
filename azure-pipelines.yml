@@ -43,6 +43,6 @@ jobs:
      displayName: Publish Artifacts
      condition: succeededOrFailed()
      inputs:
-       targetPath: $(System.DefaultWorkingDirectory)/build'
+       targetPath: '$(System.DefaultWorkingDirectory)/build'
        artifact: 'todo-Artifacts'
        publishLocation: 'pipeline'
