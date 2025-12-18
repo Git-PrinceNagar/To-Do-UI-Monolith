@@ -34,6 +34,6 @@ jobs:
         SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
       with:
         args: >
-          -Dsonar.organization=Git-PrinceNagar
+          -Dsonar.organization=git-princeNagar
           -Dsonar.projectKey=Git-PrinceNagar_To-Do-UI-Monolith
           -Dsonar.sources=src
