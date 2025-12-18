@@ -15,6 +15,7 @@ jobs:
           -Dsonar.token=sqp_3b22952c6ed3a49aab1914d3343aa63dcaa85644 \
           -Dsonar.projectKey=To-do-Pipeline \
           -Dsonar.sources=src
+      displayName: 'SonarQube Analysis'
 
  - job: Build
    dependsOn: SAST
