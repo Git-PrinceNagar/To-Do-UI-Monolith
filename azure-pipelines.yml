@@ -1,50 +1,124 @@
 trigger:
- branches:
-     include:
-       - main
+  branches:
+    include:
+      - feature*
+      - main
 
 pool: Default
 
-jobs:
- - job: SAST
-   displayName: Static Analysis(SonarQube)
-   steps:
-    - script: |
-        sonar-scanner \
-          -Dsonar.host.url=http://localhost:9000 \
-          -Dsonar.token=sqp_3b22952c6ed3a49aab1914d3343aa63dcaa85644 \
-          -Dsonar.projectKey=To-do-Pipeline \
-          -Dsonar.sources=src
-      displayName: 'SonarQube Analysis'
+stages:
+  - stage: Terraform
+    displayName: Terraform (Init & Plan)
+    jobs:
+      - job: terraformInitPlan
+        displayName: Terraform Init & Plan
+        steps:
+          - task: TerraformInstaller@1
+            inputs:
+              terraformVersion: 'latest'
 
- - job: Build
-   dependsOn: SAST
-   displayName: Build
-   steps:
-   - task: NodeTool@0
-     displayName: Node Toll Installer
-     inputs:
-       versionSource: 'spec'
-       versionSpec: '16.x'
+          - task: TerraformTask@5
+            displayName: Terraform Init
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/Environment/Dev'
+              backendServiceArm: 'monolithic-app'
+              backendAzureRmStorageAccountName: 'stgbackendname'
+              backendAzureRmContainerName: 'tfstate'
+              backendAzureRmKey: 'terraform.tfstate'
 
-   - task: CmdLine@2
-     displayName: Npm Install
-     inputs:
-       script: 'npm install'
+          - task: TerraformTask@5
+            displayName: Terraform Plan
+            inputs:
+              provider: 'azurerm'
+              command: 'plan'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/Environment/Dev'
+              environmentServiceNameAzureRM: 'monolithic-app'
 
-   - task: CmdLine@2
-     displayName: Npm Build
-     inputs:
-       script: |
-         npm run build
-         ls -la
+  - stage: Scanning
+    displayName: Scanning (tflint & tfsec)
+    dependsOn: Terraform
+    jobs:
+      - job: tflintScanning
+        displayName: tflint scanning
+        steps:
+          - task: CmdLine@2
+            inputs:
+              script: 'echo Running tflint'
 
-   - task: PublishPipelineArtifact@1
-     displayName: Publish Artifacts
-     condition: succeededOrFailed()
-     inputs:
-       targetPath: '$(System.DefaultWorkingDirectory)/build'
-       artifact: 'todo-Artifacts'
-       publishLocation: 'pipeline'
+      - job: tfsecScanning
+        displayName: tfsec scanning
+        steps:
+          - task: tfsec@1
+            inputs:
+              version: 'v1.26.0'
 
+  - stage: Deploy
+    displayName: Deploy (Terraform Apply)
+    dependsOn: Scanning
+    jobs:
+      - job: terraformApply
+        displayName: Terraform Apply
+        steps:
+          - task: TerraformInstaller@1
+            inputs:
+              terraformVersion: 'latest'
+
+          - task: TerraformTask@5
+            displayName: Terraform Init
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/Environment/Dev'
+              backendServiceArm: 'monolithic-app'
+              backendAzureRmStorageAccountName: 'stgbackendname'
+              backendAzureRmContainerName: 'tfstate'
+              backendAzureRmKey: 'terraform.tfstate'
+
+          - task: TerraformTask@5
+            displayName: Terraform Apply
+            inputs:
+              provider: 'azurerm'
+              command: 'apply'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/Environment/Dev'
+              environmentServiceNameAzureRM: 'monolithic-app'
+
+  - stage: Build
+    displayName: Build & SAST (SonarQube)
+    dependsOn: Deploy
+    jobs:
+      - job: BuildAndSAST
+        displayName: Build and Static Analysis
+        steps:
+          - task: NodeTool@0
+            displayName: Node Tool Installer
+            inputs:
+              versionSpec: '16.x'
+
+          - task: CmdLine@2
+            displayName: npm install
+            inputs:
+              script: 'npm install'
+
+          - task: CmdLine@2
+            displayName: npm build
+            inputs:
+              script: 'npm run build'
+
+          - task: PublishPipelineArtifact@1
+            displayName: Publish Artifacts
+            condition: succeededOrFailed()
+            inputs:
+              targetPath: '$(System.DefaultWorkingDirectory)/build'
+              artifact: 'todo-Artifacts'
+              publishLocation: 'pipeline'
+
+          - script: |
+              sonar-scanner \
+                -Dsonar.host.url=http://localhost:9000 \
+                -Dsonar.token=sqp_3b22952c6ed3a49aab1914d3343aa63dcaa85644 \
+                -Dsonar.projectKey=To-do-Pipeline \
+                -Dsonar.sources=src
+            displayName: SonarQube Analysis
             
