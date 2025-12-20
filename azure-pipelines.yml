@@ -23,7 +23,8 @@ stages:
               provider: 'azurerm'
               command: 'init'
               workingDirectory: '$(System.DefaultWorkingDirectory)/Environment/Dev'
-              backendServiceArm: 'monolithic-app'
+              backendServiceArm: 'Prince(e2e106a3-4a7b-4443-b147-e1da8d501783)'
+              backendAzureRmResourceGroupName: 'rg-101-backend-app'
               backendAzureRmStorageAccountName: 'stgbackendname'
               backendAzureRmContainerName: 'tfstate'
               backendAzureRmKey: 'terraform.tfstate'
@@ -34,7 +35,7 @@ stages:
               provider: 'azurerm'
               command: 'plan'
               workingDirectory: '$(System.DefaultWorkingDirectory)/Environment/Dev'
-              environmentServiceNameAzureRM: 'monolithic-app'
+              environmentServiceNameAzureRM: 'Prince(e2e106a3-4a7b-4443-b147-e1da8d501783)'
 
   - stage: Scanning
     displayName: Scanning (tflint & tfsec)
@@ -71,7 +72,8 @@ stages:
               provider: 'azurerm'
               command: 'init'
               workingDirectory: '$(System.DefaultWorkingDirectory)/Environment/Dev'
-              backendServiceArm: 'monolithic-app'
+              backendServiceArm: 'Prince(e2e106a3-4a7b-4443-b147-e1da8d501783)'
+              backendAzureRmResourceGroupName: 'rg-101-backend-app'
               backendAzureRmStorageAccountName: 'stgbackendname'
               backendAzureRmContainerName: 'tfstate'
               backendAzureRmKey: 'terraform.tfstate'
@@ -82,7 +84,7 @@ stages:
               provider: 'azurerm'
               command: 'apply'
               workingDirectory: '$(System.DefaultWorkingDirectory)/Environment/Dev'
-              environmentServiceNameAzureRM: 'monolithic-app'
+              environmentServiceNameAzureRM: 'Prince(e2e106a3-4a7b-4443-b147-e1da8d501783)'
 
   - stage: Build
     displayName: Build & SAST (SonarQube)
@@ -96,6 +98,18 @@ stages:
             inputs:
               versionSpec: '16.x'
 
+          - task: CmdLine@2
+            inputs:
+              script: 'npm install -g @sonar/scan'
+          - task: CmdLine@2
+            inputs:
+              script: |
+                sonar \
+                  -Dsonar.host.url=http://localhost:9000 \
+                  -Dsonar.token=sqp_feeb34c5cb603ac434145cc2861c9edffab6bbd7 \
+                  -Dsonar.projectKey=Todo-App \
+                  -Dsonar.sources=src
+            
           - task: CmdLine@2
             displayName: npm install
             inputs:
@@ -114,11 +128,5 @@ stages:
               artifact: 'todo-Artifacts'
               publishLocation: 'pipeline'
 
-          - script: |
-              sonar-scanner \
-                -Dsonar.host.url=http://localhost:9000 \
-                -Dsonar.token=sqp_3b22952c6ed3a49aab1914d3343aa63dcaa85644 \
-                -Dsonar.projectKey=To-do-Pipeline \
-                -Dsonar.sources=src
-            displayName: SonarQube Analysis
+
             

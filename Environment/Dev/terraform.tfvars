@@ -40,7 +40,7 @@ vms = {
     script_name                     = "nginx.sh"
     vm_name                         = "frontend-linux-machine"
     size                            = "Standard_F2"
-    key_vault_name                  = "vms-cred"
+    key_vault_name                  = "vms-cred1"
     key_vault_resource_group_name   = "key-vault-rg"
     disable_password_authentication = "false"
     subnet_name                     = "fronteend_subnet"
@@ -59,7 +59,7 @@ vms = {
     script_name                     = "nginx.sh"
     vm_name                         = "backend-linux-machine"
     size                            = "Standard_F2"
-    key_vault_name                  = "vms-cred"
+    key_vault_name                  = "vms-cred1"
     key_vault_resource_group_name   = "key-vault-rg"
     disable_password_authentication = "false"
     subnet_name                     = "backend_subnet"
@@ -77,7 +77,7 @@ mssql = {
     administrator_login           = "prince612"
     administrator_login_password  = "Prince$612"
     database_name                 = "mydatabase"
-    key_vault_name                = "vms-cred"
+    key_vault_name                = "vms-cred1"
     key_vault_resource_group_name = "key-vault-rg"
   }
 }

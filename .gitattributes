@@ -1,1 +1,0 @@
-Environment/Dev/.terraform/**/terraform-provider-azurerm* filter=lfs diff=lfs merge=lfs -text
